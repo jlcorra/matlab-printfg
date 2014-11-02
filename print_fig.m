@@ -1,17 +1,21 @@
 function print_fig(hfig, filename, format, size, style)
 %PRINT_FIG Print figure to a file using specified format
-%   Prints a figure to a file at the specified size. If a STYLE is 
-%   provided, PRINT_FIG will try to apply its properties to every plot,
-%   axis, label and legend object found.
 %
-%   PRINT_FIG(HFIG, 'filename', 'format', [W, H])
-%   PRINT_FIG(HFIG, 'filename', 'format', [W, H], STYLE)
+%   Prints the figure with the handle hfig to the file filename at the 
+%   specified size using a supported format. If a style is provided, then
+%   this function will try to apply the corresponding properties to every 
+%   plot, axis, label and legend object found under figure hfig.
 %
-%   HFIG    : Figure handle to print
-%   FILENAME    : Filename without extension
-%   FORMAT  : Output format or extension
-%   SIZE    : Printing size [WIDTH, HEIGHT] in points
-%   STYLE   : Struct array of figure properties to be overloaded
+%   PRINT_FIG(hfig, 'filename', 'format', [width, height])
+%   PRINT_FIG(hfig, 'filename', 'format', [width, height], style)
+%
+%   Arguments:
+%       hfig    : Figure handle to print
+%       filename    : Filename without extension
+%       format  : Output format. See SAVEAS for supported formats
+%       width   : Printing width in points
+%       height  : Printing height in points
+%       style   : Struct array of figure properties to be overloaded
 %
 %   Examples:
 %       print_fig(hf1, 'figure1', 'png', [350 275]);
@@ -50,7 +54,7 @@ print.plot.MarkerSize = 6;
 
 %% Overload defaults with provided style
 f1 = {'fig', 'plot', 'axis', 'label', 'legend'};
-% Only supported in R2014 and above
+% Dynamic fieldnames are only supported in R2014a and above
 if exist('style', 'var') && ~isempty(style)
     for i = find(isfield(style, f1))
         f2 = fieldnames(style.(f1{i}));
