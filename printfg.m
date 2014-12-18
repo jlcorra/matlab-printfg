@@ -1,14 +1,14 @@
-function print_fig(hfig, filename, format, resize, properties)
-%PRINT_FIG Print figure to a file using specified format
+function printfg(hfig, filename, format, resize, properties)
+%PRINTFG Print figure to a file using specified format
 %
 %   Prints the figure with the handle hfig to the file filename at the 
 %   specified size using a supported format. If a style is provided, then
 %   this function will try to apply the corresponding properties to every 
 %   plot, axis, label and legend object found under figure hfig.
 %
-%   PRINT_FIG(hfig, 'filename', format)
-%   PRINT_FIG(hfig, 'filename', format, [width, height])
-%   PRINT_FIG(hfig, 'filename', format, [width, height], properties)
+%   PRINTFG(hfig, 'filename', format)
+%   PRINTFG(hfig, 'filename', format, [width, height])
+%   PRINTFG(hfig, 'filename', format, [width, height], properties)
 %
 %   Arguments:
 %       hfig    : Figure handle to print
@@ -19,9 +19,9 @@ function print_fig(hfig, filename, format, resize, properties)
 %       properties  : Struct array of figure properties to be overloaded
 %
 %   Examples:
-%       print_fig(hf1, 'figure1', 'png', [350 275]);
-%       print_fig(hf1, 'figure1', {'eps', 'png'}, [350 275]);
-%       print_fig(hf2, 'figure2', {'eps', 'png'}, [350 275], style);
+%       printfg(hf1, 'figure1', 'png', [350 275]);
+%       printfg(hf1, 'figure1', {'eps', 'png'}, [350 275]);
+%       printfg(hf2, 'figure2', {'eps', 'png'}, [350 275], style);
 %
 %   See also: SAVEAS, PRINT.
 
