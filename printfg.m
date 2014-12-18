@@ -1,27 +1,27 @@
-function printfg(hfig, filename, format, resize, properties)
+function printfg(hfig, name, output, resize, prop)
 %PRINTFG Print figure to a file using specified format
 %
-%   Prints the figure with the handle hfig to the file filename at the 
-%   specified size using a supported format. If a style is provided, then
-%   this function will try to apply the corresponding properties to every 
-%   plot, axis, label and legend object found under figure hfig.
+%   Prints the figure with the handle hfig to a file at the specified size 
+%   using a supported format. If a style is provided, then this function will 
+%   try to apply the corresponding properties to every axis, line, label, title  
+%   and legend object found under figure hfig.
 %
-%   PRINTFG(hfig, 'filename', format)
-%   PRINTFG(hfig, 'filename', format, [width, height])
-%   PRINTFG(hfig, 'filename', format, [width, height], properties)
+%   PRINTFG(hfig, 'filename', output)
+%   PRINTFG(hfig, 'filename', output, [width, height])
+%   PRINTFG(hfig, 'filename', output, [width, height], prop)
 %
 %   Arguments:
 %       hfig    : Figure handle to print
-%       filename    : Filename without extension
-%       format  : Output format. See SAVEAS or PRINT for supported formats
-%       width   : Printing width in points
-%       height  : Printing height in points
-%       properties  : Struct array of figure properties to be overloaded
+%       name    : Output filename without extension
+%       output  : Cell array of output formats
+%       width   : Printing width (points by default)
+%       height  : Printing height (points by default)
+%       prop    : Struct array of figure properties to be overloaded
 %
 %   Examples:
 %       printfg(hf1, 'figure1', 'png', [350 275]);
 %       printfg(hf1, 'figure1', {'eps', 'png'}, [350 275]);
-%       printfg(hf2, 'figure2', {'eps', 'png'}, [350 275], style);
+%       printfg(hf2, 'figure2', {'eps', 'png'}, [350 275], prop);
 %
 %   See also: SAVEAS, PRINT.
 
@@ -33,104 +33,115 @@ function printfg(hfig, filename, format, resize, properties)
 
 %% Arguments
 if nargin <= 2
-    error('Requires handle to figure, filename and format.');
+    error('Requires handle to figure, filename and extension.');
 end
+if length(hfig) > 1 || ~isgraphics(hfig)
+    error('Figure handle must be a single valid graphic object.');
+end
+% Make sure output is a cell array of strings
+output = cellstr(output);
 
 %% Recover figure handles
 % Axis handles
-hax = findall(hfig, 'Type', 'Axes');
-hax = hax(~ismember(get(hax, 'Tag'), {'legend', 'colorbar'}));
+% Filter legend & colorbar handles on MATLAB R2014a and earlier
+if verLessThan('matlab','8.4.0')
+    hax = hax(~ismember(findobj(get(hfig, 'Children'), 'Type', 'Axes'),...
+        {'legend', 'colorbar'}));
+else
+    hax = findobj(get(hfig, 'Children'), 'Type', 'Axes');
+end
 
 % Plot handles
-hpl = findall(hfig, 'Type', 'Line');
+hpl = findobj(get(hax, 'Children'), 'Type', 'Line');
 
 % Legend handles
-hlg = findall(hfig, 'Type', 'Axes', 'Tag', 'legend');
-%hlg = hlg(ismember(get(hlg, 'Interpreter'), {'latex'}));
+% On MATLAB R2014b and higher, legends have their own graphic object type
+if verLessThan('matlab','8.4.0')
+    hlg = findobj(get(hfig, 'Children'), 'Type', 'Axes', 'Tag', 'legend');
+else
+    hlg = findobj(get(hfig, 'Children'), 'Type', 'Legend');
+end
 
 %% Default properties
-% Some safe standard properties definitions that make plots look nice by
-% default. Overload as neccessary.
-prop.Axes.Box = 'off';
+% Some safe standard properties that make figures look nicer by default
+% Overload as needed
+defs.Axes.Box = 'off';
 
-prop.Line.LineWidth = 1;
-prop.Line.MarkerSize = 6;
+defs.Line.LineWidth = 1;
+defs.Line.MarkerSize = 6;
 
-%% Printing dimensions
+%% Figure dimensions
 if ~exist('resize', 'var') || isempty(resize)
-    prop.Figure.PaperPositionMode = 'auto';
+    defs.Figure.PaperPositionMode = 'auto';
 elseif length(resize) == 2
-    prop.Figure.PaperUnits = 'points';
-    prop.Figure.PaperPositionMode = 'manual';
-    prop.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
+    defs.Figure.PaperUnits = 'points';
+    defs.Figure.PaperSize = [resize(1), resize(2)];
+    defs.Figure.PaperPositionMode = 'manual';
+    defs.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
 else
-    error(['Figure dimensions must be a 2-element vector containing ',...
+    error(['Print size must be a 2-element vector containing ',...
         'width and height.']);
 end
 
-%% Overload default properties with user style
+%% Overload defaults with user properties
 f1 = {'Figure', 'Line', 'Axes', 'Label', 'Title', 'Legend'};
 % Dynamic fieldnames are only supported in R2014a and above
-if exist('properties', 'var') && ~isempty(properties)
-    for i = find(isfield(properties, f1))
-        f2 = fieldnames(properties.(f1{i}));
+if exist('prop', 'var') && ~isempty(prop)
+    for i = find(isfield(prop, f1))
+        f2 = fieldnames(prop.(f1{i}));
         for k = 1:length(f2)
-            prop.(f1{i}).(f2{k}) = properties.(f1{i}).(f2{k});
+            defs.(f1{i}).(f2{k}) = prop.(f1{i}).(f2{k});
         end
     end
 end
 
 %% Figure
-if isfield(prop, 'Figure') && ~isempty(prop.Figure)
-    set(hfig, prop.Figure);
+if isfield(defs, 'Figure') && ~isempty(defs.Figure)
+    set(hfig, defs.Figure);
 end
 
 %% Plot lines & markers
-if isfield(prop, 'Line') && ~isempty(prop.Line)
-    set(hpl, prop.Line);
+if isfield(defs, 'Line') && ~isempty(defs.Line)
+    set(hpl, defs.Line);
+end
+
+%% Legend
+if isfield(defs, 'Legend') && ~isempty(defs.Legend)
+    set(hlg, defs.Legend);
 end
 
 %% Axis lines & ticks
 % [!] Axis font is also applied to legends
-if isfield(prop, 'Axes') && ~isempty(prop.Axes)
-    set(hax, prop.Axes);
+if isfield(defs, 'Axes') && ~isempty(defs.Axes)
+    set(hax, defs.Axes);
 end
 
 %% Axis labels & title
-% Apply label properties to title, overload if neccessary
-if isfield(prop, 'Label') && ~isempty(prop.Label)
-    set(cell2mat(get(hax, {'XLabel', 'YLabel', 'Title'})), prop.Label);
+if isfield(defs, 'Label') && ~isempty(defs.Label)
+    set(get(hax, 'XLabel'), defs.Label);
+    set(get(hax, 'YLabel'), defs.Label);
 end
-if isfield(prop, 'Title') && ~isempty(prop.Title)
-    set(get(hax, 'Title'), prop.Title);
-end
-
-%% Legends
-if isfield(prop, 'Legend') && ~isempty(prop.Legend)
-    set(hlg, prop.Legend);
+if isfield(defs, 'Title') && ~isempty(defs.Title)
+    set(get(hax, 'Title'), defs.Title);
 end
 
 %% Remove additional whitespace margins
 % Undocumented property, might cause some issues with the LaTeX interpreter
-% Can be disabled through overloading, i.e.:
-%   properties.Axes.TightInset = get(gca, 'LooseInset')
 LooseInset = get(hax, {'LooseInset'});
 set(hax, {'LooseInset'}, get(hax, {'TightInset'}));
 
 %% Print figure to file
-format = cellstr(format);
-for i = 1:length(format)
-    switch format{i}
+for i = 1:length(output)
+    filename = sprintf('%s.%s', name, output{i});
+    switch output{i}
         case 'eps'
-            print(hfig, '-depsc2', filename);
-        case {'png', 'jpeg', 'tiff'}
-            print(hfig, ['-d', format{i}], '-r150', filename);
+            print(hfig, filename, '-depsc', '-r150', '-loose', '-painters');
+        case 'pdf'
+            print(hfig, filename, '-dpdf', '-r150', '-painters');
         otherwise
-            saveas(hfig, filename, format{i});
+            saveas(hfig, filename, output{i});
     end
 end
 
 %% Restore whitespace margins
 set(hax, {'LooseInset'}, LooseInset);
-
-end
