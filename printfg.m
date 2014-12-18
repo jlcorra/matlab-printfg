@@ -135,7 +135,7 @@ for i = 1:length(output)
     filename = sprintf('%s.%s', name, output{i});
     switch output{i}
         case 'eps'
-            print(hfig, filename, '-depsc', '-r150', '-painters');
+            print(hfig, filename, '-depsc', '-r150', '-loose', '-painters');
         case 'pdf'
             print(hfig, filename, '-dpdf', '-r150', '-painters');
         otherwise
