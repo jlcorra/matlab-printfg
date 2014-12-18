@@ -43,12 +43,22 @@ output = cellstr(output);
 
 %% Recover figure handles
 % Axis handles
-hax = findall(hfig, 'Type', 'Axes');
-hax = hax(~ismember(get(hax, 'Tag'), {'legend', 'colorbar'}));
+hax = findobj(get(hfig, 'Children'), 'Type', 'Axes');
+% Filter legend & colorbar handles on MATLAB R2014a and earlier
+if verLessThan('matlab','8.4.0')
+    hax = hax(~ismember(get(hax, 'Tag'), {'legend', 'colorbar'}));
+end
+
 % Plot handles
-hpl = findall(hfig, 'Type', 'Line');
+hpl = findobj(get(hax, 'Children'), 'Type', 'Line');
+
 % Legend handles
-hlg = findall(hfig, 'Type', 'Axes', 'Tag', 'legend');
+% On MATLAB R2014b and higher, legends have their own graphic object type
+if verLessThan('matlab','8.4.0')
+    hlg = findobj(get(hfig, 'Children'), 'Type', 'Axes', 'Tag', 'legend');
+else
+    hlg = findobj(get(hfig, 'Children'), 'Type', 'Legend');
+end
 
 %% Default properties
 % Some safe standard properties that make figures look nicer by default
