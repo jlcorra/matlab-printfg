@@ -135,9 +135,9 @@ for i = 1:length(output)
     filename = sprintf('%s.%s', name, output{i});
     switch output{i}
         case 'eps'
-            print(hfig, '-depsc2', filename);
-        case {'png', 'jpeg', 'tiff'}
-            print(hfig, ['-d', format{i}], '-r150', filename);
+            print(hfig, filename, '-depsc', '-r150', '-painters');
+        case 'pdf'
+            print(hfig, filename, '-dpdf', '-r150', '-painters');
         otherwise
             saveas(hfig, filename, output{i});
     end
