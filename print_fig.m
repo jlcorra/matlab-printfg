@@ -58,7 +58,9 @@ prop.Line.LineWidth = 1;
 prop.Line.MarkerSize = 6;
 
 %% Printing dimensions
-if length(resize) == 2
+if ~exist('resize', 'var') || isempty(resize)
+    prop.Figure.PaperPositionMode = 'auto';
+elseif length(resize) == 2
     prop.Figure.PaperUnits = 'points';
     prop.Figure.PaperPositionMode = 'manual';
     prop.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
