@@ -43,10 +43,12 @@ output = cellstr(output);
 
 %% Recover figure handles
 % Axis handles
-hax = findobj(get(hfig, 'Children'), 'Type', 'Axes');
 % Filter legend & colorbar handles on MATLAB R2014a and earlier
 if verLessThan('matlab','8.4.0')
-    hax = hax(~ismember(get(hax, 'Tag'), {'legend', 'colorbar'}));
+    hax = hax(~ismember(findobj(get(hfig, 'Children'), 'Type', 'Axes'),...
+        {'legend', 'colorbar'}));
+else
+    hax = findobj(get(hfig, 'Children'), 'Type', 'Axes');
 end
 
 % Plot handles
