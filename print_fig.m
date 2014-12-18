@@ -52,7 +52,6 @@ hlg = findall(hfig, 'Type', 'Axes', 'Tag', 'legend');
 % Some safe standard properties definitions that make plots look nice by
 % default. Overload as neccessary.
 prop.Axes.Box = 'off';
-prop.Axes.LineWidth = 1;
 
 prop.Line.LineWidth = 1;
 prop.Line.MarkerSize = 6;
