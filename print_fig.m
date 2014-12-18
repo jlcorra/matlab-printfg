@@ -20,8 +20,8 @@ function print_fig(hfig, filename, format, resize, properties)
 %
 %   Examples:
 %       print_fig(hf1, 'figure1', 'png', [350 275]);
-%       print_fig(hf1, 'figure1', 'epsc2', [350 275]);
-%       print_fig(hf2, 'figure2', 'pdf', [350 275], style);
+%       print_fig(hf1, 'figure1', {'eps', 'png'}, [350 275]);
+%       print_fig(hf2, 'figure2', {'eps', 'png'}, [350 275], style);
 %
 %   See also: SAVEAS, PRINT.
 
@@ -119,7 +119,17 @@ LooseInset = get(hax, {'LooseInset'});
 set(hax, {'LooseInset'}, get(hax, {'TightInset'}));
 
 %% Print figure to file
-saveas(hfig, filename, format);
+format = cellstr(format);
+for i = 1:length(format)
+    switch format{i}
+        case 'eps'
+            print(hfig, '-depsc2', filename);
+        case {'png', 'jpeg', 'tiff'}
+            print(hfig, ['-d', format{i}], '-r150', filename);
+        otherwise
+            saveas(hfig, filename, format{i});
+    end
+end
 
 %% Restore whitespace margins
 set(hax, {'LooseInset'}, LooseInset);
