@@ -106,7 +106,8 @@ end
 
 %% Axis labels & title
 if isfield(defs, 'Label') && ~isempty(defs.Label)
-    set(cell2mat(get(hax, {'XLabel', 'YLabel', 'Title'})), prop.Label);
+    set(get(hax, 'XLabel'), defs.Label);
+    set(get(hax, 'YLabel'), defs.Label);
 end
 if isfield(defs, 'Title') && ~isempty(defs.Title)
     set(get(hax, 'Title'), defs.Title);
