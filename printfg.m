@@ -45,8 +45,8 @@ output = cellstr(output);
 % Axis handles
 % Filter legend & colorbar handles on MATLAB R2014a and earlier
 if verLessThan('matlab','8.4.0')
-    hax = hax(~ismember(findobj(get(hfig, 'Children'), 'Type', 'Axes'),...
-        {'legend', 'colorbar'}));
+    hax = findobj(get(hfig, 'Children'), 'Type', 'Axes',...
+        '-not', 'Tag', 'legend', '-not', 'Tag', 'colorbar');
 else
     hax = findobj(get(hfig, 'Children'), 'Type', 'Axes');
 end
@@ -135,7 +135,13 @@ for i = 1:length(output)
     filename = sprintf('%s.%s', name, output{i});
     switch output{i}
         case 'eps'
-            print(hfig, filename, '-depsc', '-r150', '-loose', '-painters');
+            % Workaround R2014b issues with PostScript printing margins 
+            if verLessThan('matlab','8.4.0')
+                print(hfig, filename, '-depsc', '-r150', '-painters');
+            else
+                print(hfig, filename, '-depsc', '-r150', '-loose',...
+                    '-painters');
+            end
         case 'pdf'
             print(hfig, filename, '-dpdf', '-r150', '-painters');
         otherwise
