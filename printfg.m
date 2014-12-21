@@ -38,6 +38,14 @@ end
 if length(hfig) > 1 || ~isgraphics(hfig)
     error('Figure handle must be a single valid graphic object.');
 end
+if ~exist('resize', 'var')
+    resize = [];
+end
+if ~isempty(resize) && length(resize) ~= 2
+    error(['Print size must be a 2-element vector containing ',...
+        'width and height.']);
+end
+
 % Make sure output is a cell array of strings
 output = cellstr(output);
 
@@ -66,22 +74,8 @@ end
 % Some safe standard properties that make figures look nicer by default
 % Overload as needed
 defs.Axes.Box = 'off';
-
 defs.Line.LineWidth = 1;
 defs.Line.MarkerSize = 6;
-
-%% Figure dimensions
-if ~exist('resize', 'var') || isempty(resize)
-    defs.Figure.PaperPositionMode = 'auto';
-elseif length(resize) == 2
-    defs.Figure.PaperUnits = 'points';
-    defs.Figure.PaperSize = [resize(1), resize(2)];
-    defs.Figure.PaperPositionMode = 'manual';
-    defs.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
-else
-    error(['Print size must be a 2-element vector containing ',...
-        'width and height.']);
-end
 
 %% Overload defaults with user properties
 f1 = {'Figure', 'Line', 'Axes', 'Label', 'Title', 'Legend'};
@@ -96,6 +90,14 @@ if exist('prop', 'var') && ~isempty(prop)
 end
 
 %% Figure
+if ~isempty(resize)
+    if ~isfield(defs, 'Figure') || ~isfield(defs.Figure, 'PaperUnits')
+        defs.Figure.PaperUnits = 'points';
+    end
+    defs.Figure.PaperSize = [resize(1), resize(2)];
+    defs.Figure.PaperPositionMode = 'manual';
+    defs.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
+end
 if isfield(defs, 'Figure') && ~isempty(defs.Figure)
     set(hfig, defs.Figure);
 end
@@ -116,7 +118,7 @@ if isfield(defs, 'Axes') && ~isempty(defs.Axes)
     set(hax, defs.Axes);
 end
 
-%% Axis labels & title
+%% XLabel, YLabel & Titles
 if isfield(defs, 'Label') && ~isempty(defs.Label)
     set(get(hax, 'XLabel'), defs.Label);
     set(get(hax, 'YLabel'), defs.Label);
