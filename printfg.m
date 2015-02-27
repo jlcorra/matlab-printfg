@@ -137,13 +137,13 @@ for i = 1:length(output)
         case 'eps'
             % Workaround R2014b issues with PostScript printing margins 
             if verLessThan('matlab','8.4.0')
-                print(hfig, filename, '-depsc', '-r150', '-painters');
+                print(hfig, filename, '-depsc', '-r300', '-painters');
             else
-                print(hfig, filename, '-depsc', '-r150', '-loose',...
+                print(hfig, filename, '-depsc', '-r300', '-loose',...
                     '-painters');
             end
         case 'pdf'
-            print(hfig, filename, '-dpdf', '-r150', '-painters');
+            print(hfig, filename, '-dpdf', '-r300', '-painters');
         otherwise
             saveas(hfig, filename, output{i});
     end
