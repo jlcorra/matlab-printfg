@@ -1,7 +1,9 @@
 ### MATLAB ###
 
-# MatLab autosave files
-.asv
+# Windows autosave extension
+*.asv
+# Unix autosave extension
+*.m~
 
 ### OS ###
 
