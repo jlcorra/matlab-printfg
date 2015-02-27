@@ -74,6 +74,10 @@ end
 % Some safe standard properties that make figures look nicer by default
 % Overload as needed
 defs.Axes.Box = 'off';
+% Use a default LineWidth only if a different one hasn't been specified
+if isequal(get(hpl, 'LineWidth'), num2cell(ones(size(hpl))))
+    defs.Line.LineWidth = 1;
+end
 
 %% Overload defaults with user properties
 f1 = {'Figure', 'Line', 'Axes', 'Label', 'Title', 'Legend'};
