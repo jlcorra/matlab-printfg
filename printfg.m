@@ -3,8 +3,8 @@ function printfg(hfig, name, output, resize, prop)
 %
 %   Prints the figure with the handle hfig to a file at the specified size 
 %   using a supported format. If a style is provided, then this function will 
-%   try to apply the corresponding properties to every axis, line, label, title  
-%   and legend object found under figure hfig.
+%   try to apply the corresponding properties to every axis, line, label, 
+%   title and legend object found under figure hfig.
 %
 %   PRINTFG(hfig, 'filename', output)
 %   PRINTFG(hfig, 'filename', output, [width, height])
@@ -74,6 +74,18 @@ end
 % Some safe standard properties that make figures look nicer by default
 % Overload as needed
 defs.Axes.Box = 'off';
+% Figure size
+if isempty(resize)
+    % Ensure paper size adjusts to figure size (no whitespace)
+    set(hfig, 'PaperPositionMode', 'auto');
+    paperp = get(hfig, 'PaperPosition');
+    resize = [paperp(3), paperp(4)];
+else
+    defs.Figure.PaperUnits = 'points';
+end
+defs.Figure.PaperSize = [resize(1), resize(2)];
+defs.Figure.PaperPositionMode = 'manual';
+defs.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
 
 %% Overload defaults with user properties
 f1 = {'Figure', 'Line', 'Axes', 'Label', 'Title', 'Legend'};
@@ -88,14 +100,6 @@ if exist('prop', 'var') && ~isempty(prop)
 end
 
 %% Figure
-if ~isempty(resize)
-    if ~isfield(defs, 'Figure') || ~isfield(defs.Figure, 'PaperUnits')
-        defs.Figure.PaperUnits = 'points';
-    end
-    defs.Figure.PaperSize = [resize(1), resize(2)];
-    defs.Figure.PaperPositionMode = 'manual';
-    defs.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
-end
 if isfield(defs, 'Figure') && ~isempty(defs.Figure)
     set(hfig, defs.Figure);
 end
