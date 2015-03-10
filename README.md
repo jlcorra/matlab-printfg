@@ -42,6 +42,11 @@ prop.Title.FontSize = 12;
 printfg(hf, 'figure', {'png', 'eps'}, [500, 250], prop);
 ```
 
+## Samples
+Check out some examples of the output produced by _printfg_ inside the _samples_ subfolder.
+
+![sinewaves.png](samples/sinewaves.png)
+
 ## Known Issues
 - MATLAB R2014b seems to produce different results with printing sizes than earlier versions.
 - Figures with multiple axes are not supported yet (i.e. plots produced by _plotyy_).
