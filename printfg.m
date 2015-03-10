@@ -40,10 +40,12 @@ if length(hfig) > 1 || ~isgraphics(hfig)
 end
 if ~exist('resize', 'var')
     resize = [];
-end
-if ~isempty(resize) && length(resize) ~= 2
+elseif ~isempty(resize) && length(resize) ~= 2
     error(['Print size must be a 2-element vector containing ',...
         'width and height.']);
+end
+if ~exist('prop', 'var')
+    prop = struct();
 end
 
 % Make sure output is a cell array of strings
@@ -70,63 +72,53 @@ else
     hlg = findobj(get(hfig, 'Children'), 'Type', 'Legend');
 end
 
-%% Default properties
-% Some safe standard properties that make figures look nicer by default
-% Overload as needed
-defs.Axes.Box = 'off';
-% Figure size
+%% Figure size properties
 if isempty(resize)
     % Ensure paper size adjusts to figure size (no whitespace)
     set(hfig, 'PaperPositionMode', 'auto');
     paperp = get(hfig, 'PaperPosition');
     resize = [paperp(3), paperp(4)];
-else
-    defs.Figure.PaperUnits = 'points';
-end
-defs.Figure.PaperSize = [resize(1), resize(2)];
-defs.Figure.PaperPositionMode = 'manual';
-defs.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
-
-%% Overload defaults with user properties
-f1 = {'Figure', 'Line', 'Axes', 'Label', 'Title', 'Legend'};
-% Dynamic fieldnames are only supported in R2014a and above
-if exist('prop', 'var') && ~isempty(prop)
-    for i = find(isfield(prop, f1))
-        f2 = fieldnames(prop.(f1{i}));
-        for k = 1:length(f2)
-            defs.(f1{i}).(f2{k}) = prop.(f1{i}).(f2{k});
-        end
-    end
+elseif ~isfield(prop, 'Figure') || ~isfield(prop.Figure, 'PaperUnits')
+    prop.Figure.PaperUnits = 'points';
 end
 
-%% Figure
-if isfield(defs, 'Figure') && ~isempty(defs.Figure)
-    set(hfig, defs.Figure);
+if ~isfield(prop, 'Figure') || ~isfield(prop.Figure, 'PaperSize')
+    prop.Figure.PaperSize = [resize(1), resize(2)];
+end
+if ~isfield(prop, 'Figure') || ~isfield(prop.Figure, 'PaperPositionMode')
+    prop.Figure.PaperPositionMode = 'manual';
+end
+if ~isfield(prop, 'Figure') || ~isfield(prop.Figure, 'PaperPosition')
+    prop.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
 end
 
-%% Plot lines & markers
-if isfield(defs, 'Line') && ~isempty(defs.Line)
-    set(hpl, defs.Line);
+%% Apply properties
+% Figure
+if isfield(prop, 'Figure')
+    set(hfig, prop.Figure);
 end
-
-%% Legend
-if isfield(defs, 'Legend') && ~isempty(defs.Legend)
-    set(hlg, defs.Legend);
+% Plot lines & markers
+if isfield(prop, 'Line')
+    set(hpl, prop.Line);
 end
-
-%% Axis lines & ticks
-% [!] Axis font is also applied to legends
-if isfield(defs, 'Axes') && ~isempty(defs.Axes)
-    set(hax, defs.Axes);
+% Axis lines, ticks & tick labels
+% [!] Axis font is also applied to legends and labels, depending on MATLAB
+% version
+if isfield(prop, 'Axes')
+    set(hax, prop.Axes);
 end
-
-%% XLabel, YLabel & Titles
-if isfield(defs, 'Label') && ~isempty(defs.Label)
-    set(get(hax, 'XLabel'), defs.Label);
-    set(get(hax, 'YLabel'), defs.Label);
+% Labels
+if isfield(prop, 'Label')
+    set(get(hax, 'XLabel'), prop.Label);
+    set(get(hax, 'YLabel'), prop.Label);
 end
-if isfield(defs, 'Title') && ~isempty(defs.Title)
-    set(get(hax, 'Title'), defs.Title);
+% Title
+if isfield(prop, 'Title')
+    set(get(hax, 'Title'), prop.Title);
+end
+% Legend
+if isfield(prop, 'Legend')
+    set(hlg, prop.Legend);
 end
 
 %% Remove additional whitespace margins

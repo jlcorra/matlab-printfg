@@ -13,6 +13,7 @@ plot(data(:,1), data(:,2:end))
 xlabel('Time (s)')
 ylabel('Amplitude (V)')
 grid on
+box off
 
 legend('Wave 1', 'Wave 2', 'Wave 3', 'Wave 4',...
     'Location', 'SouthWest')
