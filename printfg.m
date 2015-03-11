@@ -108,15 +108,14 @@ if isfield(prop, 'Axes')
     set(hax, prop.Axes);
 end
 % Labels
-if isfield(prop, 'Label')
-    set(get(hax, 'XLabel'), prop.Label);
-    set(get(hax, 'YLabel'), prop.Label);
-end
 if isfield(prop, 'XLabel')
     set(get(hax, 'XLabel'), prop.XLabel);
 end
 if isfield(prop, 'YLabel')
     set(get(hax, 'YLabel'), prop.YLabel);
+end
+if isfield(prop, 'ZLabel')
+    set(get(hax, 'ZLabel'), prop.ZLabel);
 end
 % Title
 if isfield(prop, 'Title')
