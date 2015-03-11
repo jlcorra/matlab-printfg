@@ -112,6 +112,12 @@ if isfield(prop, 'Label')
     set(get(hax, 'XLabel'), prop.Label);
     set(get(hax, 'YLabel'), prop.Label);
 end
+if isfield(prop, 'XLabel')
+    set(get(hax, 'XLabel'), prop.XLabel);
+end
+if isfield(prop, 'YLabel')
+    set(get(hax, 'YLabel'), prop.YLabel);
+end
 % Title
 if isfield(prop, 'Title')
     set(get(hax, 'Title'), prop.Title);
