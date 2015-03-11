@@ -1,4 +1,4 @@
-%SINEWAVES Plot sample datafile 'sinewaves.tab' and export using printfg().
+%SINEWAVES Export 2-D line plot of sample datafile 'sinewaves.tab'.
 
 %% Add upper directory to path
 addpath ../../

@@ -1,4 +1,4 @@
-function printfg(hfig, name, output, resize, prop)
+function printfg(hFig, name, output, resize, prop)
 %PRINTFG Print figure to a file using specified format
 %
 %   Prints the figure with the handle hfig to a file at the specified size 
@@ -11,7 +11,7 @@ function printfg(hfig, name, output, resize, prop)
 %   PRINTFG(hfig, 'filename', output, [width, height], prop)
 %
 %   Arguments:
-%       hfig    : Figure handle to print
+%       hFig    : Figure handle to print
 %       name    : Output filename without extension
 %       output  : Cell array of output formats
 %       width   : Printing width (points by default)
@@ -35,7 +35,7 @@ function printfg(hfig, name, output, resize, prop)
 if nargin <= 2
     error('Requires handle to figure, filename and extension.');
 end
-if length(hfig) > 1 || ~isgraphics(hfig)
+if length(hFig) > 1 || ~isgraphics(hFig)
     error('Figure handle must be a single valid graphic object.');
 end
 if ~exist('resize', 'var')
@@ -55,29 +55,30 @@ output = cellstr(output);
 % Axis handles
 % Filter legend & colorbar handles on MATLAB R2014a and earlier
 if verLessThan('matlab','8.4.0')
-    hax = findobj(get(hfig, 'Children'), 'Type', 'Axes',...
-        '-not', 'Tag', 'legend', '-not', 'Tag', 'colorbar');
+    hAx = findobj(hFig, 'Type', 'Axes', '-not', 'Tag', 'legend',...
+        '-not', 'Tag', 'colorbar');
 else
-    hax = findobj(get(hfig, 'Children'), 'Type', 'Axes');
+    hAx = findobj(hFig, 'Type', 'Axes');
 end
 
-% Plot handles
-hpl = findobj(get(hax, 'Children'), 'Type', 'Line');
+% Line handles
+hLine = findobj(hAx, 'Type', 'Line');
 
 % Legend handles
 % On MATLAB R2014b and higher, legends have their own graphic object type
 if verLessThan('matlab','8.4.0')
-    hlg = findobj(get(hfig, 'Children'), 'Type', 'Axes', 'Tag', 'legend');
+    hLeg = findobj(hFig, 'Type', 'Axes', 'Tag', 'legend');
 else
-    hlg = findobj(get(hfig, 'Children'), 'Type', 'Legend');
+    hLeg = findobj(hFig, 'Type', 'Legend');
 end
 
 %% Figure size properties
 if isempty(resize)
+    set(hFig, 'PaperPositionMode', 'auto');
     % Ensure paper size adjusts to figure size (no whitespace)
-    set(hfig, 'PaperPositionMode', 'auto');
-    paperp = get(hfig, 'PaperPosition');
+    paperp = get(hFig, 'PaperPosition');
     resize = [paperp(3), paperp(4)];
+    
 elseif ~isfield(prop, 'Figure') || ~isfield(prop.Figure, 'PaperUnits')
     prop.Figure.PaperUnits = 'points';
 end
@@ -95,42 +96,47 @@ end
 %% Apply properties
 % Figure
 if isfield(prop, 'Figure')
-    set(hfig, prop.Figure);
+    set(hFig, prop.Figure);
 end
 % Plot lines & markers
 if isfield(prop, 'Line')
-    set(hpl, prop.Line);
+    set(hLine, prop.Line);
 end
 % Axis lines, ticks & tick labels
 % [!] Axis font is also applied to legends and labels, depending on MATLAB
 % version
 if isfield(prop, 'Axes')
-    set(hax, prop.Axes);
+    set(hAx, prop.Axes);
 end
 % Labels
-if isfield(prop, 'Label')
-    set(get(hax, 'XLabel'), prop.Label);
-    set(get(hax, 'YLabel'), prop.Label);
-end
 if isfield(prop, 'XLabel')
-    set(get(hax, 'XLabel'), prop.XLabel);
+    for n = 1:length(hAx)
+        set(get(hAx(n), 'XLabel'), prop.XLabel);
+    end
 end
 if isfield(prop, 'YLabel')
-    set(get(hax, 'YLabel'), prop.YLabel);
+    for n = 1:length(hAx)
+        set(get(hAx(n), 'YLabel'), prop.YLabel);
+    end
+end
+if isfield(prop, 'ZLabel')
+    for n = 1:length(hAx)
+        set(get(hAx(n), 'ZLabel'), prop.ZLabel);
+    end
 end
 % Title
 if isfield(prop, 'Title')
-    set(get(hax, 'Title'), prop.Title);
+    set(get(hAx, 'Title'), prop.Title);
 end
 % Legend
 if isfield(prop, 'Legend')
-    set(hlg, prop.Legend);
+    set(hLeg, prop.Legend);
 end
 
 %% Remove additional whitespace margins
 % Undocumented property, might cause some issues with the LaTeX interpreter
-LooseInset = get(hax, {'LooseInset'});
-set(hax, {'LooseInset'}, get(hax, {'TightInset'}));
+LooseInset = get(hAx, {'LooseInset'});
+set(hAx, {'LooseInset'}, get(hAx, {'TightInset'}));
 
 %% Print figure to file
 for i = 1:length(output)
@@ -139,17 +145,17 @@ for i = 1:length(output)
         case 'eps'
             % Workaround R2014b issues with PostScript printing margins 
             if verLessThan('matlab','8.4.0')
-                print(hfig, filename, '-depsc', '-r300', '-painters');
+                print(hFig, filename, '-depsc', '-r300', '-painters');
             else
-                print(hfig, filename, '-depsc', '-r300', '-loose',...
+                print(hFig, filename, '-depsc', '-r300', '-loose',...
                     '-painters');
             end
         case 'pdf'
-            print(hfig, filename, '-dpdf', '-r300', '-painters');
+            print(hFig, filename, '-dpdf', '-r300', '-painters');
         otherwise
-            saveas(hfig, filename, output{i});
+            saveas(hFig, filename, output{i});
     end
 end
 
 %% Restore whitespace margins
-set(hax, {'LooseInset'}, LooseInset);
+set(hAx, {'LooseInset'}, LooseInset);
