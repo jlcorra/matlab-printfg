@@ -72,43 +72,45 @@ else
     hLeg = findobj(hFig, 'Type', 'Legend');
 end
 
-%% Figure size properties
+%% Size properties
 if isempty(resize)
     set(hFig, 'PaperPositionMode', 'auto');
     % Ensure paper size adjusts to figure size (no whitespace)
     paperp = get(hFig, 'PaperPosition');
     resize = [paperp(3), paperp(4)];
-    
-elseif ~isfield(prop, 'Figure') || ~isfield(prop.Figure, 'PaperUnits')
-    prop.Figure.PaperUnits = 'points';
+else
+    defs.Figure.PaperUnits = 'points';
 end
 
-if ~isfield(prop, 'Figure') || ~isfield(prop.Figure, 'PaperSize')
-    prop.Figure.PaperSize = [resize(1), resize(2)];
-end
-if ~isfield(prop, 'Figure') || ~isfield(prop.Figure, 'PaperPositionMode')
-    prop.Figure.PaperPositionMode = 'manual';
-end
-if ~isfield(prop, 'Figure') || ~isfield(prop.Figure, 'PaperPosition')
-    prop.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
-end
+defs.Figure.PaperSize = [resize(1), resize(2)];
+defs.Figure.PaperPositionMode = 'manual';
+defs.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
 
-%% Apply properties
-% Figure
+%% Figure properties
 if isfield(prop, 'Figure')
+    % Merge user properties with defaults
+    f2 = fieldnames(defs.Figure);
+    for k = find(~isfield(prop.Figure, f2))
+        prop.Figure.(f2{k}) = defs.Figure.(f2{k});
+    end
     set(hFig, prop.Figure);
+else
+    set(hFig, defs.Figure);
 end
-% Plot lines & markers
+
+%% Plot lines & markers
 if isfield(prop, 'Line')
     set(hLine, prop.Line);
 end
-% Axis lines, ticks & tick labels
+
+%% Axis lines, ticks & tick labels
 % [!] Axis font is also applied to legends and labels, depending on MATLAB
 % version
 if isfield(prop, 'Axes')
     set(hAx, prop.Axes);
 end
-% Labels
+
+%% Labels
 if isfield(prop, 'XLabel')
     for n = 1:length(hAx)
         set(get(hAx(n), 'XLabel'), prop.XLabel);
@@ -124,11 +126,15 @@ if isfield(prop, 'ZLabel')
         set(get(hAx(n), 'ZLabel'), prop.ZLabel);
     end
 end
-% Title
+
+%% Title
 if isfield(prop, 'Title')
-    set(get(hAx, 'Title'), prop.Title);
+    for n = 1:length(hAx)
+        set(get(hAx(n), 'Title'), prop.Title);
+    end
 end
-% Legend
+
+%% Legend
 if isfield(prop, 'Legend')
     set(hLeg, prop.Legend);
 end
