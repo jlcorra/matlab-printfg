@@ -1,4 +1,5 @@
-%SINEWAVES Plot sample datafile 'sinewaves.tab' and export using printfg().
+%SINEWAVES Export 2-D line plot of sample datafile 'sinewaves.tab'.
+clear prop
 
 %% Add upper directory to path
 addpath ../../
@@ -25,7 +26,7 @@ prop.Axes.FontName = 'Times New Roman';
 prop.Axes.FontSize = 11;
 
 %% Export
-printfg(hf, 'sinewaves', {'png', 'pdf', 'eps'}, [5 3], prop);
+printfg(hf, '../sinewaves', {'png', 'pdf', 'eps'}, [5 3], prop);
 
 %% Restore path
 rmpath ../../
