@@ -49,7 +49,7 @@ Check out some examples of the output produced by _printfg_ inside the _samples_
 
 ## Known Issues
 - MATLAB R2014b seems to produce different results with printing sizes than earlier versions.
-- Figures with multiple axes are not supported yet (i.e. plots produced by _plotyy_).
+- On figures with multiple axes, large labels might get cut off, depending on which output format is used (i.e. changing from _png_ to _pdf_ might help).
 
 ## License
 matlab-printfg is open-sourced software licensed under the [MIT License](http://opensource.org/licenses/MIT). For the full copyright and license information, please view the LICENSE file that was distributed with this source code.
