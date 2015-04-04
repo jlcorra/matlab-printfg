@@ -23,13 +23,10 @@ function printfg(hFig, name, output, resize, prop)
 %       printfg(hf1, 'figure1', {'eps', 'png'}, [350 275]);
 %       printfg(hf2, 'figure2', {'eps', 'png'}, [350 275], prop);
 %
-%   See also: SAVEAS, PRINT.
-
-%   For the full copyright and license information, please view the LICENSE
-%   file that was distributed with this source code.
+%   License:
+%       MIT License (http://opensource.org/licenses/MIT)
+%       Copyright (c) 2015 José L. Corrales <https://github.com/jlcorra>
 %
-%   @license http://opensource.org/licenses/MIT MIT License
-%   @copyright Copyright (c) 2014 José L. Corrales
 
 %% Arguments
 if nargin <= 2
