@@ -85,10 +85,12 @@ defs.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
 
 %% Figure properties
 if isfield(prop, 'Figure')
-    % Merge user properties with defaults
-    f2 = fieldnames(defs.Figure);
-    for k = find(~isfield(prop.Figure, f2))
-        prop.Figure.(f2{k}) = defs.Figure.(f2{k});
+    % Find default fields that were not overriden by the user
+    fn = fieldnames(defs.Figure);
+    fn = fn(~isfield(prop.Figure, fn));
+    % Merge defaults with user properties
+    for k = 1:length(fn)
+        prop.Figure.(fn{k}) = defs.Figure.(fn{k});
     end
     set(hFig, prop.Figure);
 else
