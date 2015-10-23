@@ -70,6 +70,8 @@ else
 end
 
 %% Size properties
+% Paper size and position properties need to be specified in order [!]
+% i.e. units must be applied before corresponding numerical values
 if isempty(resize)
     set(hFig, 'PaperPositionMode', 'auto');
     % Ensure paper size adjusts to figure size (no whitespace)
@@ -85,17 +87,15 @@ defs.Figure.PaperPosition = [0, 0, resize(1), resize(2)];
 
 %% Figure properties
 if isfield(prop, 'Figure')
-    % Find default fields that were not overriden by the user
-    fn = fieldnames(defs.Figure);
-    fn = fn(~isfield(prop.Figure, fn));
-    % Merge defaults with user properties
+    % Find fields that were defined or overriden by the user
+    fn = fieldnames(prop.Figure);
+    % Merge into defs.Figure to ensure fields follow correct order
+    % PaperUnits, PaperSize, PaperPositionMode, PaperPosition, ...
     for k = 1:length(fn)
-        prop.Figure.(fn{k}) = defs.Figure.(fn{k});
+        defs.Figure.(fn{k}) = prop.Figure.(fn{k});
     end
-    set(hFig, prop.Figure);
-else
-    set(hFig, defs.Figure);
 end
+set(hFig, defs.Figure);
 
 %% Plot lines & markers
 if isfield(prop, 'Line')
