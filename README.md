@@ -14,10 +14,10 @@ printfg(hf, 'figure', 'png');
 Notice that there is no need to specify file extension as part of the filename, since `printfg()` is smart enough to figure it out on its own. You can also save a figure to multiple files with different extensions at the same time:
 
 ```matlab
-printfg(hf, 'figure', {'png', 'eps'});
+printfg(hf, 'figure', {'png', 'epsc'});
 ```
 
-Any extension supported by MATLAB's native `saveas()` and `print()` functions is also supported by `printfg()`, with the following caveat: `eps` is shorthand for PostScript Color, as opposed to the usual monochrome output.
+Internally, `printfg()` uses MATLAB's native `saveas()` and `print()` functions to print the figure. Therefore, any extension supported by MATLAB is also supported by `printfg()`. Some additional options and enhancements are provided for certain formats; for instance, common bitmap types use a high resolution by default.
 
 ### Size
 By default, `printfg()` will attempt to use the figure's actual size on screen for printing. Print size can also be specified as a two-element vector defining width and height in __points__:
