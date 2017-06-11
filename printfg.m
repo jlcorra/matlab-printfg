@@ -145,20 +145,23 @@ set(hAx, {'LooseInset'}, get(hAx, {'TightInset'}));
 
 %% Print figure to file
 for i = 1:length(output)
-    filename = sprintf('%s.%s', name, output{i});
     switch output{i}
-        case 'eps'
+        case 'pdf'
+            print(hFig, name, '-dpdf', '-painters');
+        case {'eps','epsc','eps2','epsc2'}
             % Workaround R2014b issues with PostScript printing margins 
             if verLessThan('matlab','8.4.0')
-                print(hFig, filename, '-depsc', '-r300', '-painters');
+                print(hFig, name, ['-d',output{i}], '-painters');
             else
-                print(hFig, filename, '-depsc', '-r300', '-loose',...
-                    '-painters');
+                print(hFig, name, ['-d',output{i}],...
+                    '-loose', '-painters');
             end
-        case 'pdf'
-            print(hFig, filename, '-dpdf', '-r300', '-painters');
+        case {'png','tiff','tiffn','bmpmono','bmp','bmp16m','bmp256'}
+            % Use 300dpi resolution for bitmap output types
+            print(hFig, name, ['-d',output{i}], '-r300');
         otherwise
-            saveas(hFig, filename, output{i});
+            % Fallback to saveas() on other output types
+            saveas(hFig, name, output{i});
     end
 end
 
