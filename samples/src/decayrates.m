@@ -33,7 +33,7 @@ prop.Axes.FontName = 'Times New Roman';
 prop.Axes.FontSize = 11;
 
 %% Print figure at 480x300px
-printfg(hf, 'decayrates1', {'png', 'pdf', 'eps'}, [480 300], prop);
+printfg(hf, 'decayrates1', {'png', 'pdf', 'epsc'}, [480 300], prop);
 
 %% Print figure at 400x250px
 % Work-around MATLAB positioning issues that cause labels to get cut-off

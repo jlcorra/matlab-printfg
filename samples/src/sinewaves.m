@@ -28,7 +28,7 @@ prop.Axes.FontName = 'Times New Roman';
 prop.Axes.FontSize = 11;
 
 %% Print figure
-printfg(hf, 'sinewaves', {'png', 'pdf', 'eps'}, [5 3], prop);
+printfg(hf, 'sinewaves', {'png', 'pdf', 'epsc'}, [5 3], prop);
 
 %% Restore path
 path(oldpath)
